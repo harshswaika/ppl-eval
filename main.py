@@ -67,7 +67,6 @@ def compute(predictions, model, tokenizer, batch_size: int = 8, add_start_token:
         tokenizer.add_special_tokens({"pad_token": existing_special_tokens[0]})
 
     if add_start_token and max_length:
-        # leave room for <BOS> token to be added:
         assert (
             tokenizer.bos_token is not None
         ), "Input model must already have a BOS token if using add_start_token=True. Please use a different model, or set add_start_token=False"
@@ -88,7 +87,6 @@ def compute(predictions, model, tokenizer, batch_size: int = 8, add_start_token:
     encoded_texts = encodings["input_ids"]
     attn_masks = encodings["attention_mask"]
 
-    # check that each input is long enough:
     if add_start_token:
         assert torch.all(torch.ge(attn_masks.sum(1), 1)), "Each input text must be at least one token long."
     else:
@@ -130,7 +128,33 @@ def compute(predictions, model, tokenizer, batch_size: int = 8, add_start_token:
     return {"mean_perplexity": np.mean(ppls), "perplexities": ppls}
 
 
-input_texts = load_dataset("wikitext", "wikitext-2-raw-v1", split="test")["text"]#[:10] # doctest: +SKIP
+#Perplexity calculation by varying stride length
+
+# test = load_dataset('wikitext', 'wikitext-2-raw-v1', split='test')
+# encodings = tokenizer('\n\n'.join(test['text']), return_tensors='pt')
+
+# max_length = model.config.max_position_embeddings
+# stride = 512
+
+# lls = []
+# for i in tqdm(range(0, encodings.input_ids.size(1), stride)):
+#     begin_loc = max(i + stride - max_length, 0)
+#     end_loc = min(i + stride, encodings.input_ids.size(1))
+#     trg_len = end_loc - i    # may be different from stride on last loop
+#     input_ids = encodings.input_ids[:,begin_loc:end_loc].to(device)
+#     target_ids = input_ids.clone()
+#     target_ids[:,:-trg_len] = -100
+
+#     with torch.no_grad():
+#         outputs = model(input_ids, labels=target_ids)
+#         log_likelihood = outputs[0] * trg_len
+
+#     lls.append(log_likelihood)
+
+# ppl = torch.exp(torch.stack(lls).sum() / end_loc)
+
+
+input_texts = load_dataset("wikitext", "wikitext-2-raw-v1", split="test")["text"]#[:10] 
 input_texts = [s for s in input_texts if s!='']
 results = compute(model = model, tokenizer = tokenizer, batch_size=8, predictions=input_texts)
 
