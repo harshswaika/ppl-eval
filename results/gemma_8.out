@@ -1,0 +1,10 @@
+nohup: ignoring input
+Traceback (most recent call last):
+  File "/home/test/harsh/llm/main.py", line 21, in <module>
+    bnb_quantization_config = BitsAndBytesConfig(load_in_8bit=True, llm_int8_threshold = 6)
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/test/anaconda3/envs/llm/lib/python3.12/site-packages/transformers/utils/quantization_config.py", line 395, in __init__
+    self.post_init()
+  File "/home/test/anaconda3/envs/llm/lib/python3.12/site-packages/transformers/utils/quantization_config.py", line 434, in post_init
+    raise ValueError("llm_int8_threshold must be a float")
+ValueError: llm_int8_threshold must be a float

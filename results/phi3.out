@@ -1,0 +1,68 @@
+nohup: ignoring input
+Special tokens have been added in the vocabulary, make sure the associated word embeddings are fine-tuned or trained.
+You are attempting to use Flash Attention 2.0 without specifying a torch dtype. This might lead to unexpected behaviour
+You are attempting to use Flash Attention 2.0 with a model not initialized on GPU. Make sure to move the model to GPU after initializing it on CPU with `model.to('cuda')`.
+Flash Attention 2.0 only supports torch.float16 and torch.bfloat16 dtypes, but the current dype in Phi3ForCausalLM is torch.float32. You should run training or inference using Automatic Mixed-Precision via the `with torch.autocast(device_type='torch_device'):` decorator, or load the model with the `torch_dtype` argument. Example: `model = AutoModel.from_pretrained("openai/whisper-tiny", attn_implementation="flash_attention_2", torch_dtype=torch.float16)`
+Flash Attention 2.0 only supports torch.float16 and torch.bfloat16 dtypes, but the current dype in Phi3Model is torch.float32. You should run training or inference using Automatic Mixed-Precision via the `with torch.autocast(device_type='torch_device'):` decorator, or load the model with the `torch_dtype` argument. Example: `model = AutoModel.from_pretrained("openai/whisper-tiny", attn_implementation="flash_attention_2", torch_dtype=torch.float16)`
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards:  50%|█████     | 1/2 [00:00<00:00,  1.44it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:01<00:00,  1.91it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:01<00:00,  1.82it/s]
+  0%|          | 0/181 [00:00<?, ?it/s]The input hidden states seems to be silently casted in float32, this might be related to the fact you have upcasted embedding or layer norm layers in float32. We will cast back the input in torch.float32.
+  0%|          | 0/181 [00:01<?, ?it/s]
+Traceback (most recent call last):
+  File "/home/test/harsh/llm/main.py", line 121, in <module>
+    results = compute(model = model, tokenizer = tokenizer, batch_size=16, predictions=input_texts)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/test/harsh/llm/main.py", line 103, in compute
+    out_logits = model(encoded_batch, attention_mask=attn_mask).logits
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/test/anaconda3/envs/llm/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1532, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/test/anaconda3/envs/llm/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1541, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/test/.cache/huggingface/modules/transformers_modules/microsoft/Phi-3-mini-4k-instruct/ff07dc01615f8113924aed013115ab2abd32115b/modeling_phi3.py", line 1286, in forward
+    outputs = self.model(
+              ^^^^^^^^^^^
+  File "/home/test/anaconda3/envs/llm/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1532, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/test/anaconda3/envs/llm/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1541, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/test/.cache/huggingface/modules/transformers_modules/microsoft/Phi-3-mini-4k-instruct/ff07dc01615f8113924aed013115ab2abd32115b/modeling_phi3.py", line 1164, in forward
+    layer_outputs = decoder_layer(
+                    ^^^^^^^^^^^^^^
+  File "/home/test/anaconda3/envs/llm/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1532, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/test/anaconda3/envs/llm/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1541, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/test/.cache/huggingface/modules/transformers_modules/microsoft/Phi-3-mini-4k-instruct/ff07dc01615f8113924aed013115ab2abd32115b/modeling_phi3.py", line 885, in forward
+    attn_outputs, self_attn_weights, present_key_value = self.self_attn(
+                                                         ^^^^^^^^^^^^^^^
+  File "/home/test/anaconda3/envs/llm/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1532, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/test/anaconda3/envs/llm/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1541, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/test/.cache/huggingface/modules/transformers_modules/microsoft/Phi-3-mini-4k-instruct/ff07dc01615f8113924aed013115ab2abd32115b/modeling_phi3.py", line 573, in forward
+    attn_output = self._flash_attention_forward(
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/test/.cache/huggingface/modules/transformers_modules/microsoft/Phi-3-mini-4k-instruct/ff07dc01615f8113924aed013115ab2abd32115b/modeling_phi3.py", line 641, in _flash_attention_forward
+    attn_output_unpad = flash_attn_varlen_func(
+                        ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/test/anaconda3/envs/llm/lib/python3.12/site-packages/flash_attn/flash_attn_interface.py", line 1066, in flash_attn_varlen_func
+    return FlashAttnVarlenFunc.apply(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/test/anaconda3/envs/llm/lib/python3.12/site-packages/torch/autograd/function.py", line 598, in apply
+    return super().apply(*args, **kwargs)  # type: ignore[misc]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/test/anaconda3/envs/llm/lib/python3.12/site-packages/flash_attn/flash_attn_interface.py", line 581, in forward
+    out, q, k, v, out_padded, softmax_lse, S_dmask, rng_state = _flash_attn_varlen_forward(
+                                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/test/anaconda3/envs/llm/lib/python3.12/site-packages/flash_attn/flash_attn_interface.py", line 86, in _flash_attn_varlen_forward
+    out, q, k, v, out_padded, softmax_lse, S_dmask, rng_state = flash_attn_cuda.varlen_fwd(
+                                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: FlashAttention only support fp16 and bf16 data type
